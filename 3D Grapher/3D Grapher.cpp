@@ -13,9 +13,9 @@
 using namespace std;
 using namespace glm;
 
-GLuint VBO[1];
-GLuint IBO[1];
-GLuint VAO[1];
+GLuint VBO[2];
+GLuint IBO[2];
+GLuint VAO[2];
 GLuint gWVPLocation;
 GLuint gXAxisRot;
 GLuint gYAxisRot;
@@ -29,14 +29,16 @@ const char* pFSFileName = "shader.fs";
 struct Vertex
 {
 	vec3 m_pos;
-	vec2 m_color;
+	vec4 m_color;
+	int m_shader;
 
 	Vertex() {}
 
-	Vertex(vec3 pos, vec4 color)
+	Vertex(vec3 pos, vec4 color, int shader)
 	{
 		m_pos = pos;
 		m_color = color;
+		m_shader = shader;
 	}
 };
 
@@ -63,6 +65,9 @@ static void RenderSceneCB()
 
 	glBindVertexArray(VAO[0]);
 	glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_INT, 0);
+
+	glBindVertexArray(VAO[1]);
+	glDrawElements(GL_TRIANGLES, 120, GL_UNSIGNED_INT, 0);
 
 	glutSwapBuffers();
 }
@@ -101,22 +106,33 @@ static void CreateVertexBuffers()
 
 	float axisWidth = .005;
 
-	axisVert[0] = { vec3(-1.0f, -.5*axisWidth, 0.0f), vec4(0.0, 0.0, 0.0, 1.0) };
-	axisVert[1] = { vec3(-1.0f, .5*axisWidth, 0.0f), vec4(0.0, 0.0, 0.0, 1.0) };
-	axisVert[2] = { vec3(1.0f, -.5*axisWidth, 0.0f), vec4(0.0, 0.0, 0.0, 1.0) };
-	axisVert[3] = { vec3(1.0f, .5*axisWidth, 0.0f), vec4(0.0, 0.0, 0.0, 1.0) };
-	axisVert[4] = { vec3(0.0f, -1.0f, -.5*axisWidth), vec4(0.0, 0.0, 0.0, 1.0) };
-	axisVert[5] = { vec3(0.0f, -1.0f, .5*axisWidth), vec4(0.0, 0.0, 0.0, 1.0) };
-	axisVert[6] = { vec3(0.0f, 1.0f, -.5*axisWidth), vec4(0.0, 0.0, 0.0, 1.0) };
-	axisVert[7] = { vec3(0.0f, 1.0f, .5*axisWidth), vec4(0.0, 0.0, 0.0, 1.0) };
-	axisVert[8] = { vec3(-.5*axisWidth, 0.0f, -1.0f), vec4(0.0, 0.0, 0.0, 1.0) };
-	axisVert[9] = { vec3(.5*axisWidth, 0.0f, -1.0f), vec4(0.0, 0.0, 0.0, 1.0) };
-	axisVert[10] = { vec3(-.5*axisWidth, 0.0f, 1.0f), vec4(0.0, 0.0, 0.0, 1.0) };
-	axisVert[11] = { vec3(.5*axisWidth, 0.0f, 1.0f), vec4(0.0, 0.0, 0.0, 1.0) };
+	axisVert[0] = { vec3(-1.0f, -.5*axisWidth, 0.0f), vec4(0.0, 0.0, 0.0, 1.0), 0 };
+	axisVert[1] = { vec3(-1.0f, .5*axisWidth, 0.0f), vec4(0.0, 0.0, 0.0, 1.0), 0 };
+	axisVert[2] = { vec3(1.0f, -.5*axisWidth, 0.0f), vec4(0.0, 0.0, 0.0, 1.0), 0 };
+	axisVert[3] = { vec3(1.0f, .5*axisWidth, 0.0f), vec4(0.0, 0.0, 0.0, 1.0), 0 };
+	axisVert[4] = { vec3(0.0f, -1.0f, -.5*axisWidth), vec4(0.0, 0.0, 0.0, 1.0), 0 };
+	axisVert[5] = { vec3(0.0f, -1.0f, .5*axisWidth), vec4(0.0, 0.0, 0.0, 1.0), 0 };
+	axisVert[6] = { vec3(0.0f, 1.0f, -.5*axisWidth), vec4(0.0, 0.0, 0.0, 1.0), 0 };
+	axisVert[7] = { vec3(0.0f, 1.0f, .5*axisWidth), vec4(0.0, 0.0, 0.0, 1.0), 0 };
+	axisVert[8] = { vec3(-.5*axisWidth, 0.0f, -1.0f), vec4(0.0, 0.0, 0.0, 1.0), 0 };
+	axisVert[9] = { vec3(.5*axisWidth, 0.0f, -1.0f), vec4(0.0, 0.0, 0.0, 1.0), 0 };
+	axisVert[10] = { vec3(-.5*axisWidth, 0.0f, 1.0f), vec4(0.0, 0.0, 0.0, 1.0), 0 };
+	axisVert[11] = { vec3(.5*axisWidth, 0.0f, 1.0f), vec4(0.0, 0.0, 0.0, 1.0), 0 };
 
 	glGenBuffers(1, &VBO[0]);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(axisVert), axisVert, GL_STATIC_DRAW);
+
+	Vertex spiralVert[42];
+
+	for (int i = 0; i <= 20; i++) {
+		spiralVert[2 * i] = { vec3(0.95 * cosf(.070710678 * i), 0.95 * sinf(.070710678 * i), 0.95 * .070710678 * i), vec4(0.0f, 0.0f, 1.0f, 1.0f), 1 };
+		spiralVert[(2 * i) + 1] = { vec3(1.05 * cosf(.070710678 * i), 1.05 * sinf(.070710678 * i), 1.05 * .070710678 * i), vec4(0.0f, 0.0f, 1.0f, 1.0f), 1 };
+	}
+
+	glGenBuffers(1, &VBO[1]);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(spiralVert), spiralVert, GL_STATIC_DRAW);
 
 }
 
@@ -135,6 +151,16 @@ static void CreateIndexBuffers()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO[0]);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(axisIndex), axisIndex, GL_STATIC_DRAW);
 
+	unsigned int spiralIndex[120];
+
+	for (int i = 0; i < 20; i++) {
+		spiralIndex[6 * i + 0] = 2 * i + 0;	spiralIndex[6 * i + 1] = 2 * i + 2;		spiralIndex[6 * i + 2] = 2 * i + 3;
+		spiralIndex[6 * i + 3] = 2 * i + 3;	spiralIndex[6 * i + 4] = 2 * i + 1;		spiralIndex[6 * i + 5] = 2 * i + 0;
+	}
+
+	glGenBuffers(1, &IBO[1]);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO[1]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(spiralIndex), spiralIndex, GL_STATIC_DRAW);
 }
 
 static void CreateVertexArrays()
@@ -147,10 +173,26 @@ static void CreateVertexArrays()
 	glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)12);
-
+	glVertexAttribPointer(2, 1, GL_INT, GL_FALSE, sizeof(Vertex), (const GLvoid*)28);
+	
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO[0]);
+
+
+	glGenVertexArrays(1, &VAO[1]);
+	glBindVertexArray(VAO[1]);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)12);
+	glVertexAttribPointer(2, 1, GL_INT, GL_FALSE, sizeof(Vertex), (const GLvoid*)28);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO[1]);
 
 }
 
