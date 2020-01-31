@@ -73,16 +73,39 @@ const mat4* Pipeline::getWVPTrans()
 	return &m_transformation;
 }
 
-const mat4* Pipeline::getXCamRot()
+const mat4* Pipeline::getXAxisRot()
 {
 	mat4 RotateTrans;
-	vec3 Normal = normalize(vec3(0.0, m_camera.Target.y, m_camera.Target.z));
-	std::cout << '\n' << "< 0.0, " << Normal.y << ", " << Normal.z << " >\n" << 180 * asin(Normal.y) / pi<float>();
+	vec3 Normal = normalize(vec3(0.0, m_camera.Pos.y, m_camera.Pos.z));
 	
-	RotateTrans = initRotateTrans(vec3(180 * asin(Normal.y) / pi<float>(), 0.0f, 0.0f));
+	RotateTrans = initRotateTrans(vec3(-180 * atan(Normal.y / Normal.z) / pi<float>(), 0.0f, 0.0f));
 
 	m_xTransformation = RotateTrans;
 
 	return &m_xTransformation;
+}
+
+const mat4* Pipeline::getYAxisRot()
+{
+	mat4 RotateTrans;
+	vec3 Normal = normalize(vec3(m_camera.Pos.x, 0.0, m_camera.Pos.z));
+
+	RotateTrans = initRotateTrans(vec3(0.0, 180 * atan(Normal.z / Normal.x) / pi<float>(), 0.0f));
+
+	m_yTransformation = RotateTrans;
+
+	return &m_yTransformation;
+}
+
+const mat4* Pipeline::getZAxisRot()
+{
+	mat4 RotateTrans;
+	vec3 Normal = normalize(vec3(m_camera.Pos.x, m_camera.Pos.y, 0.0f));
+
+	RotateTrans = initRotateTrans(vec3(0.0, 0.0f, -180 * atan(Normal.x / Normal.y) / pi<float>()));
+
+	m_zTransformation = RotateTrans;
+
+	return &m_zTransformation;
 }
 

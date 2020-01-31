@@ -17,7 +17,9 @@ GLuint VBO[1];
 GLuint IBO[1];
 GLuint VAO[1];
 GLuint gWVPLocation;
-GLuint gXCamRot;
+GLuint gXAxisRot;
+GLuint gYAxisRot;
+GLuint gZAxisRot;
 Camera* pCamera = NULL;
 PersProjInfo persProj;
 
@@ -55,7 +57,9 @@ static void RenderSceneCB()
 	p.setPersProj(persProj);
 
 	glUniformMatrix4fv(gWVPLocation, 1, GL_FALSE, (const GLfloat*)p.getWVPTrans());
-	glUniformMatrix4fv(gXCamRot, 1, GL_FALSE, (const GLfloat*)p.getXCamRot());
+	glUniformMatrix4fv(gXAxisRot, 1, GL_FALSE, (const GLfloat*)p.getXAxisRot());
+	glUniformMatrix4fv(gYAxisRot, 1, GL_FALSE, (const GLfloat*)p.getYAxisRot());
+	glUniformMatrix4fv(gZAxisRot, 1, GL_FALSE, (const GLfloat*)p.getZAxisRot());
 
 	glBindVertexArray(VAO[0]);
 	glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_INT, 0);
@@ -95,18 +99,20 @@ static void CreateVertexBuffers()
 
 	Vertex axisVert[12];
 
-	axisVert[0] = { vec3(-1.0f, -0.005f, 0.0f), vec4(0.0, 0.0, 0.0, 1.0) };
-	axisVert[1] = { vec3(-1.0f, 0.005f, 0.0f), vec4(0.0, 0.0, 0.0, 1.0) };
-	axisVert[2] = { vec3(1.0f, -0.005f, 0.0f), vec4(0.0, 0.0, 0.0, 1.0) };
-	axisVert[3] = { vec3(1.0f, 0.005f, 0.0f), vec4(0.0, 0.0, 0.0, 1.0) };
-	axisVert[4] = { vec3(-0.005f, -1.0f, 0.0f), vec4(0.0, 0.0, 0.0, 1.0) };
-	axisVert[5] = { vec3(0.005f, -1.0f, 0.0f), vec4(0.0, 0.0, 0.0, 1.0) };
-	axisVert[6] = { vec3(-0.005f, 1.0f, 0.0f), vec4(0.0, 0.0, 0.0, 1.0) };
-	axisVert[7] = { vec3(0.005f, 1.0f, 0.0f), vec4(0.0, 0.0, 0.0, 1.0) };
-	axisVert[8] = { vec3(-0.005f, 0.0f, -1.0f), vec4(0.0, 0.0, 0.0, 1.0) };
-	axisVert[9] = { vec3(0.005f, 0.0f, -1.0f), vec4(0.0, 0.0, 0.0, 1.0) };
-	axisVert[10] = { vec3(-0.005f, 0.0f, 1.0f), vec4(0.0, 0.0, 0.0, 1.0) };
-	axisVert[11] = { vec3(0.005f, 0.0f, 1.0f), vec4(0.0, 0.0, 0.0, 1.0) };
+	float axisWidth = .005;
+
+	axisVert[0] = { vec3(-1.0f, -.5*axisWidth, 0.0f), vec4(0.0, 0.0, 0.0, 1.0) };
+	axisVert[1] = { vec3(-1.0f, .5*axisWidth, 0.0f), vec4(0.0, 0.0, 0.0, 1.0) };
+	axisVert[2] = { vec3(1.0f, -.5*axisWidth, 0.0f), vec4(0.0, 0.0, 0.0, 1.0) };
+	axisVert[3] = { vec3(1.0f, .5*axisWidth, 0.0f), vec4(0.0, 0.0, 0.0, 1.0) };
+	axisVert[4] = { vec3(0.0f, -1.0f, -.5*axisWidth), vec4(0.0, 0.0, 0.0, 1.0) };
+	axisVert[5] = { vec3(0.0f, -1.0f, .5*axisWidth), vec4(0.0, 0.0, 0.0, 1.0) };
+	axisVert[6] = { vec3(0.0f, 1.0f, -.5*axisWidth), vec4(0.0, 0.0, 0.0, 1.0) };
+	axisVert[7] = { vec3(0.0f, 1.0f, .5*axisWidth), vec4(0.0, 0.0, 0.0, 1.0) };
+	axisVert[8] = { vec3(-.5*axisWidth, 0.0f, -1.0f), vec4(0.0, 0.0, 0.0, 1.0) };
+	axisVert[9] = { vec3(.5*axisWidth, 0.0f, -1.0f), vec4(0.0, 0.0, 0.0, 1.0) };
+	axisVert[10] = { vec3(-.5*axisWidth, 0.0f, 1.0f), vec4(0.0, 0.0, 0.0, 1.0) };
+	axisVert[11] = { vec3(.5*axisWidth, 0.0f, 1.0f), vec4(0.0, 0.0, 0.0, 1.0) };
 
 	glGenBuffers(1, &VBO[0]);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
@@ -219,8 +225,12 @@ static void CompileShaders()
 
 	gWVPLocation = glGetUniformLocation(ShaderProgram, "gWVP");
 	assert(gWVPLocation != 0xFFFFFFFF);
-	gXCamRot = glGetUniformLocation(ShaderProgram, "xRotate");
-	assert(gWVPLocation != 0xFFFFFFFF);
+	gXAxisRot = glGetUniformLocation(ShaderProgram, "xRotate");
+	assert(gXAxisRot != 0xFFFFFFFF);
+	gYAxisRot = glGetUniformLocation(ShaderProgram, "yRotate");
+	assert(gYAxisRot != 0xFFFFFFFF);
+	gZAxisRot = glGetUniformLocation(ShaderProgram, "zRotate");
+	assert(gZAxisRot != 0xFFFFFFFF);
 }
 
 int main(int argc, char** argv) 
@@ -230,7 +240,7 @@ int main(int argc, char** argv)
 	glutInitWindowSize(Window_Width, Window_Height);
 	glutInitWindowPosition(0, 0);
 	glutCreateWindow("Grapher");
-	//glutFullScreenToggle();
+	glutFullScreenToggle();
 
 	InitializeGlutCallbacks();
 

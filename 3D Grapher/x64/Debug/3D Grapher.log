@@ -1,2 +1,5 @@
-﻿  Pipeline.cpp
+﻿  3D Grapher.cpp
+C:\Users\peyto\source\repos\3D Grapher\3D Grapher\3D Grapher.cpp(50,16): warning C4305: '+=': truncation from 'double' to 'float'
+C:\Users\peyto\source\repos\3D Grapher\3D Grapher\3D Grapher.cpp(102,24): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\peyto\source\repos\3D Grapher\3D Grapher\3D Grapher.cpp(169,34): warning C4267: '=': conversion from 'size_t' to 'GLint', possible loss of data
   3D Grapher.vcxproj -> C:\Users\peyto\source\repos\3D Grapher\x64\Debug\3D Grapher.exe

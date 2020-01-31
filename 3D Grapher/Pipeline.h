@@ -34,7 +34,9 @@ public:
 	void setCamera(vec3 cameraPos, vec3 cameraTarget, vec3 cameraUp);
 	void setCamera(const Camera& camera);
 	const mat4* getWVPTrans();
-	const mat4* getXCamRot();
+	const mat4* getXAxisRot();
+	const mat4* getYAxisRot();
+	const mat4* getZAxisRot();
 private:
 	vec3 m_scale;
 	vec3 m_worldPos;
@@ -42,5 +44,7 @@ private:
 	PersProjInfo m_persProj;
 	mat4 m_transformation;
 	mat4 m_xTransformation;
+	mat4 m_yTransformation;
+	mat4 m_zTransformation;
 };
 

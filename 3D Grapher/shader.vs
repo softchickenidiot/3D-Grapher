@@ -5,6 +5,8 @@ layout (location = 1) in vec4 Color;
 
 uniform mat4 gWVP;
 uniform mat4 xRotate;
+uniform mat4 yRotate;
+uniform mat4 zRotate;
 
 out vec4 color;
 
@@ -14,9 +16,13 @@ void main()
    if (abs(Position.x) > .9) {
         gl_Position = xRotate * vec4(Position, 1.0);
         gl_Position = gWVP * gl_Position;
-        color = vec4(1.0, 0.0, 0.0, 1.0);
-   }
-   else {
-        gl_Position = gWVP * vec4(Position, 1.0);
+   }   
+   if (abs(Position.y) > .9) {
+        gl_Position = yRotate * vec4(Position, 1.0);
+        gl_Position = gWVP * gl_Position;
+   }   
+   if (abs(Position.z) > .9) {
+        gl_Position = zRotate * vec4(Position, 1.0);
+        gl_Position = gWVP * gl_Position;
    }
 };
