@@ -5,6 +5,8 @@
 #include "Pipeline.h"
 #include "PersProjInfo.h"
 #include "Camera.h"
+#include "Vertex.h"
+#include "Curve.h"
 
 
 #define Window_Width  1920
@@ -22,25 +24,11 @@ GLuint gYAxisRot;
 GLuint gZAxisRot;
 Camera* pCamera = NULL;
 PersProjInfo persProj;
+Curve* curve1 = NULL;
 
 const char* pVSFileName = "shader.vs";
 const char* pFSFileName = "shader.fs";
 
-struct Vertex
-{
-	vec3 m_pos;
-	vec4 m_color;
-	int m_shader;
-
-	Vertex() {}
-
-	Vertex(vec3 pos, vec4 color, int shader)
-	{
-		m_pos = pos;
-		m_color = color;
-		m_shader = shader;
-	}
-};
 
 static void RenderSceneCB()
 {
@@ -49,7 +37,7 @@ static void RenderSceneCB()
 	glClear(GL_COLOR_BUFFER_BIT); 
 
 	static float Scale = 0.0;
-	Scale += 0.001;
+	Scale += 0.001f;
 
 	Pipeline p;
 	p.Scale(1.0f);
@@ -67,14 +55,9 @@ static void RenderSceneCB()
 	glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_INT, 0);
 
 	glBindVertexArray(VAO[1]);
-	glDrawElements(GL_TRIANGLES, 120, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, curve1->IBOsize(), GL_UNSIGNED_INT, 0);
 
 	glutSwapBuffers();
-}
-
-static void SpecialKeyboardCB(int Key, int x, int y)
-{
-	pCamera->OnKeyboard(Key);
 }
 
 static void KeyboardCB(unsigned char Key, int x, int y)
@@ -83,6 +66,7 @@ static void KeyboardCB(unsigned char Key, int x, int y)
 	case 'q':
 		exit(0);
 	}
+	pCamera->OnKeyboard(Key);
 }
 
 static void PassiveMouseCB(int x, int y)
@@ -94,7 +78,6 @@ static void InitializeGlutCallbacks()
 {
 	glutDisplayFunc(RenderSceneCB);
 	glutIdleFunc(RenderSceneCB);
-	glutSpecialFunc(SpecialKeyboardCB);
 	glutPassiveMotionFunc(PassiveMouseCB);
 	glutKeyboardFunc(KeyboardCB);
 }
@@ -104,35 +87,28 @@ static void CreateVertexBuffers()
 
 	Vertex axisVert[12];
 
-	float axisWidth = .005;
+	float axisWidth = .005f;
 
-	axisVert[0] = { vec3(-1.0f, -.5*axisWidth, 0.0f), vec4(0.0, 0.0, 0.0, 1.0), 0 };
-	axisVert[1] = { vec3(-1.0f, .5*axisWidth, 0.0f), vec4(0.0, 0.0, 0.0, 1.0), 0 };
-	axisVert[2] = { vec3(1.0f, -.5*axisWidth, 0.0f), vec4(0.0, 0.0, 0.0, 1.0), 0 };
-	axisVert[3] = { vec3(1.0f, .5*axisWidth, 0.0f), vec4(0.0, 0.0, 0.0, 1.0), 0 };
-	axisVert[4] = { vec3(0.0f, -1.0f, -.5*axisWidth), vec4(0.0, 0.0, 0.0, 1.0), 0 };
-	axisVert[5] = { vec3(0.0f, -1.0f, .5*axisWidth), vec4(0.0, 0.0, 0.0, 1.0), 0 };
-	axisVert[6] = { vec3(0.0f, 1.0f, -.5*axisWidth), vec4(0.0, 0.0, 0.0, 1.0), 0 };
-	axisVert[7] = { vec3(0.0f, 1.0f, .5*axisWidth), vec4(0.0, 0.0, 0.0, 1.0), 0 };
-	axisVert[8] = { vec3(-.5*axisWidth, 0.0f, -1.0f), vec4(0.0, 0.0, 0.0, 1.0), 0 };
-	axisVert[9] = { vec3(.5*axisWidth, 0.0f, -1.0f), vec4(0.0, 0.0, 0.0, 1.0), 0 };
-	axisVert[10] = { vec3(-.5*axisWidth, 0.0f, 1.0f), vec4(0.0, 0.0, 0.0, 1.0), 0 };
-	axisVert[11] = { vec3(.5*axisWidth, 0.0f, 1.0f), vec4(0.0, 0.0, 0.0, 1.0), 0 };
+	axisVert[0] = { vec3(-1.0f, -.5*axisWidth, 0.0f), vec4(0.0f, 0.0f, 0.0f, 1.0f), 0 };
+	axisVert[1] = { vec3(-1.0f, .5*axisWidth, 0.0f), vec4(0.0f, 0.0f, 0.0f, 1.0f), 0 };
+	axisVert[2] = { vec3(1.0f, -.5*axisWidth, 0.0f), vec4(0.0f, 0.0f, 0.0f, 1.0f), 0 };
+	axisVert[3] = { vec3(1.0f, .5*axisWidth, 0.0f), vec4(0.0f, 0.0f, 0.0f, 1.0f), 0 };
+	axisVert[4] = { vec3(0.0f, -1.0f, -.5*axisWidth), vec4(0.0f, 0.0f, 0.0f, 1.0f), 0 };
+	axisVert[5] = { vec3(0.0f, -1.0f, .5*axisWidth), vec4(0.0f, 0.0f, 0.0f, 1.0f), 0 };
+	axisVert[6] = { vec3(0.0f, 1.0f, -.5*axisWidth), vec4(0.0f, 0.0f, 0.0f, 1.0f), 0 };
+	axisVert[7] = { vec3(0.0f, 1.0f, .5*axisWidth), vec4(0.0f, 0.0f, 0.0f, 1.0f), 0 };
+	axisVert[8] = { vec3(-.5*axisWidth, 0.0f, -1.0f), vec4(0.0f, 0.0f, 0.0f, 1.0f), 0 };
+	axisVert[9] = { vec3(.5*axisWidth, 0.0f, -1.0f), vec4(0.0f, 0.0f, 0.0f, 1.0f), 0 };
+	axisVert[10] = { vec3(-.5*axisWidth, 0.0f, 1.0f), vec4(0.0f, 0.0f, 0.0f, 1.0f), 0 };
+	axisVert[11] = { vec3(.5*axisWidth, 0.0f, 1.0f), vec4(0.0f, 0.0f, 0.0f, 1.0f), 0 };
 
 	glGenBuffers(1, &VBO[0]);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(axisVert), axisVert, GL_STATIC_DRAW);
 
-	Vertex spiralVert[42];
-
-	for (int i = 0; i <= 20; i++) {
-		spiralVert[2 * i] = { vec3(0.95 * cosf(.070710678 * i), 0.95 * sinf(.070710678 * i), 0.95 * .070710678 * i), vec4(0.0f, 0.0f, 1.0f, 1.0f), 1 };
-		spiralVert[(2 * i) + 1] = { vec3(1.05 * cosf(.070710678 * i), 1.05 * sinf(.070710678 * i), 1.05 * .070710678 * i), vec4(0.0f, 0.0f, 1.0f, 1.0f), 1 };
-	}
-
 	glGenBuffers(1, &VBO[1]);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(spiralVert), spiralVert, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * curve1->VBOsize(), curve1->curveVert(), GL_STATIC_DRAW);
 
 }
 
@@ -151,49 +127,28 @@ static void CreateIndexBuffers()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO[0]);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(axisIndex), axisIndex, GL_STATIC_DRAW);
 
-	unsigned int spiralIndex[120];
-
-	for (int i = 0; i < 20; i++) {
-		spiralIndex[6 * i + 0] = 2 * i + 0;	spiralIndex[6 * i + 1] = 2 * i + 2;		spiralIndex[6 * i + 2] = 2 * i + 3;
-		spiralIndex[6 * i + 3] = 2 * i + 3;	spiralIndex[6 * i + 4] = 2 * i + 1;		spiralIndex[6 * i + 5] = 2 * i + 0;
-	}
-
 	glGenBuffers(1, &IBO[1]);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO[1]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(spiralIndex), spiralIndex, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * curve1->IBOsize(), curve1->curveIndex(), GL_STATIC_DRAW);
 }
 
 static void CreateVertexArrays()
-{
-	
-	glGenVertexArrays(1, &VAO[0]);
-	glBindVertexArray(VAO[0]);
+{	
+	for (int i = 0; i < size(VAO); i++) {
+		glGenVertexArrays(1, &VAO[i]);
+		glBindVertexArray(VAO[i]);
 
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)12);
-	glVertexAttribPointer(2, 1, GL_INT, GL_FALSE, sizeof(Vertex), (const GLvoid*)28);
-	
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO[0]);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO[i]);
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)12);
+		glVertexAttribPointer(2, 1, GL_INT, GL_FALSE, sizeof(Vertex), (const GLvoid*)28);
 
-
-	glGenVertexArrays(1, &VAO[1]);
-	glBindVertexArray(VAO[1]);
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const GLvoid*)12);
-	glVertexAttribPointer(2, 1, GL_INT, GL_FALSE, sizeof(Vertex), (const GLvoid*)28);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO[1]);
-
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO[i]);
+	}
 }
 
 static void AddShader(GLuint ShaderProgram, const char* pShaderText, GLenum ShaderType)
@@ -295,6 +250,8 @@ int main(int argc, char** argv)
 	}
 
 	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
+
+	curve1 = new Curve(-5.0f, 5.0f, 64, 0.1f, vec4(0.0f, 0.0f, 1.0f, 1.0f));
 
 	CreateVertexBuffers();
 	CreateIndexBuffers();

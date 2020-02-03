@@ -1,9 +1,3 @@
 ﻿  3D Grapher.cpp
-C:\Users\peyto\source\repos\3D Grapher\3D Grapher\3D Grapher.cpp(52,16): warning C4305: '+=': truncation from 'double' to 'float'
-C:\Users\peyto\source\repos\3D Grapher\3D Grapher\3D Grapher.cpp(107,24): warning C4305: 'initializing': truncation from 'double' to 'float'
-C:\Users\peyto\source\repos\3D Grapher\3D Grapher\3D Grapher.cpp(129,53): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\peyto\source\repos\3D Grapher\3D Grapher\3D Grapher.cpp(129,82): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\peyto\source\repos\3D Grapher\3D Grapher\3D Grapher.cpp(130,59): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\peyto\source\repos\3D Grapher\3D Grapher\3D Grapher.cpp(130,88): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\peyto\source\repos\3D Grapher\3D Grapher\3D Grapher.cpp(211,34): warning C4267: '=': conversion from 'size_t' to 'GLint', possible loss of data
+C:\Users\peyto\source\repos\3D Grapher\3D Grapher\3D Grapher.cpp(166,34): warning C4267: '=': conversion from 'size_t' to 'GLint', possible loss of data
   3D Grapher.vcxproj -> C:\Users\peyto\source\repos\3D Grapher\x64\Debug\3D Grapher.exe

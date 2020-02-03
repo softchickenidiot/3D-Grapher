@@ -32,27 +32,27 @@ Camera::Camera(int WindowWidth, int WindowHeight, const vec3 Pos, const vec3 Tar
 }
 
 
-bool Camera::OnKeyboard(int Key)
+bool Camera::OnKeyboard(unsigned char Key)
 {
 	bool Ret = false;
 
 	switch (Key) {
 
-	case GLUT_KEY_UP:
+	case 'w':
 	{
 		m_pos += (m_target * K_STEP_SCALE);
 		Ret = true;
 	}
 	break;
 
-	case GLUT_KEY_DOWN:
+	case 's':
 	{
 		m_pos -= (m_target * K_STEP_SCALE);
 		Ret = true;
 	}
 	break;
 
-	case GLUT_KEY_LEFT:
+	case 'a':
 	{
 		vec3 Left = cross(m_target, m_up);
 		Left = normalize(Left);
@@ -62,7 +62,7 @@ bool Camera::OnKeyboard(int Key)
 	}
 	break;
 
-	case GLUT_KEY_RIGHT:
+	case 'd':
 	{
 		vec3 Right = cross(m_up, m_target);
 		Right = normalize(Right);
