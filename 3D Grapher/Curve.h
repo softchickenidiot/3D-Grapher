@@ -2,6 +2,7 @@
 
 #include "glm.hpp"
 #include "Vertex.h"
+#include "VectorFunction.h"
 
 using namespace glm;
 
@@ -21,8 +22,8 @@ public:
 	const Vertex* curveVert();
 	const unsigned int* curveIndex();
 
-	const int VBOsize();
-	const int IBOsize();
+	int VBOsize();
+	int IBOsize();
 
 private:
 
