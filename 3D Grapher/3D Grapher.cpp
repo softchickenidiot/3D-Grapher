@@ -7,6 +7,7 @@
 #include "Camera.h"
 #include "Vertex.h"
 #include "Curve.h"
+#include "VectorFunction.h"
 
 
 #define Window_Width  1920
@@ -130,6 +131,7 @@ static void CreateIndexBuffers()
 	glGenBuffers(1, &IBO[1]);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO[1]);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * curve1->IBOsize(), curve1->curveIndex(), GL_STATIC_DRAW);
+
 }
 
 static void CreateVertexArrays()
@@ -251,7 +253,8 @@ int main(int argc, char** argv)
 
 	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
 
-	curve1 = new Curve(-5.0f, 5.0f, 64, 0.1f, vec4(0.0f, 0.0f, 1.0f, 1.0f));
+	VectorFunction* test = new VectorFunction("t^4 + t^3","t^2","t^1");
+	curve1 = new Curve(test);
 
 	CreateVertexBuffers();
 	CreateIndexBuffers();

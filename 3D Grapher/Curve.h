@@ -10,7 +10,8 @@ class Curve {
 
 public:
 
-	Curve(float minPara = 0.0f, float maxPara = 1.0f, int samples = 16, float width = .05f, vec4 color = vec4(0.0f, 0.0f, 1.0f, 1.0f)) {
+	Curve(VectorFunction* curveFunc,float minPara = 0.0f, float maxPara = 1.0f, int samples = 16, float width = .1f, vec4 color = vec4(0.0f, 0.0f, 1.0f, 1.0f)) {
+		m_curveFunc = curveFunc;
 		m_minPara = minPara;
 		m_maxPara = maxPara;
 		m_samples = samples;
@@ -33,4 +34,6 @@ private:
 	float m_sampleLen;
 	float m_width;
 	vec4 m_color;
+
+	VectorFunction* m_curveFunc;
 };
