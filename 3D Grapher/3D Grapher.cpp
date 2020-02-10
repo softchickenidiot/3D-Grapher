@@ -1,3 +1,5 @@
+#include <iostream>
+#include <string>
 #include "GLEW/glew.h"
 #include "GL/freeglut.h"
 #include "glm.hpp"
@@ -253,8 +255,8 @@ int main(int argc, char** argv)
 
 	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
 
-	VectorFunction* test = new VectorFunction("t^4 + t^3","t^2","t^1");
-	curve1 = new Curve(test);
+	VectorFunction* test = new VectorFunction("t^1", "t^1", "t^2");
+	curve1 = new Curve(test, 1.0f, 5.0f, 64);
 
 	CreateVertexBuffers();
 	CreateIndexBuffers();
