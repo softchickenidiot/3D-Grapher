@@ -5,7 +5,7 @@ float t;
 const Vertex* Curve::curveVert()
 {
 	Vertex* curve = new Vertex[2 * (m_samples + 1)];
-
+	
 	for (int i = 0; i <= m_samples; i++) {
 		t = i * m_sampleLen + m_minPara;
 		curve[2 * i + 0] = { m_curveFunc->PositionFunc(t) - (m_width / 2) * m_curveFunc->NormalFunc(t), m_color, 1 };

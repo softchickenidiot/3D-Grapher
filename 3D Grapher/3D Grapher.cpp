@@ -255,8 +255,8 @@ int main(int argc, char** argv)
 
 	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
 
-	VectorFunction* test = new VectorFunction("t^1", "t^1", "t^2");
-	curve1 = new Curve(test, 1.0f, 5.0f, 64);
+	VectorFunction* test = new VectorFunction("t^2", "t^3", "t^4");
+	curve1 = new Curve(test, 0.0f, 2.0f, 16);
 
 	CreateVertexBuffers();
 	CreateIndexBuffers();
