@@ -45,7 +45,7 @@ float VectorFunction::Function(string func, float t)
 			break;
 		case '.': 
 			if (!isdigit(func[i - 1]) || !isdigit(func[i + 1])) {
-				cout << "Syntax ERROR\n";
+				cout << func << "\nSyntax Error\n";
 				exit(0);
 			}
 			break;
@@ -55,7 +55,7 @@ float VectorFunction::Function(string func, float t)
 				i--;
 			}
 			else {
-				cout << "Syntax ERROR\n";
+				cout << func << "\nSyntax Error\n";
 				exit(0);
 			}
 			break;
@@ -67,96 +67,8 @@ float VectorFunction::Function(string func, float t)
 			break;
 		}
 	}
-	//Trig and ln Functions 
-	for (size_t i = 0; i < func.length(); i++) {
-		switch (func[i]) {
-		case 'c':
-			if (func[i + 1] == 'o' && func[i + 2] == 's') {
-				if (func[i + 3] == '(') {
-					for (size_t j = i + 3; j < func.length(); j++) {
-						if (func[j] == ')') {
-							func.replace(i, j - i + 1, to_string(cosf(Function(func.substr(i + 4, j - i - 4), t))));
-							break;
-						}
-					}
-				}
-				else {
-					cout << "Syntax ERROR\n";
-					exit(0);
-				}
-			}
-			else {
-				cout << "Syntax ERROR\n";
-				exit(0);
-			}
-			break;
-		case 's':
-			if (func[i + 1] == 'i' && func[i + 2] == 'n') {
-				if (func[i + 3] == '(') {
-					for (size_t j = i + 3; j < func.length(); j++) {
-						if (func[j] == ')') {
-							cout << func.substr(i + 4, j - i - 4) << '\n';
-							func.replace(i, j - i + 1, to_string(sinf((Function(func.substr(i + 4, j - i - 4), t)))));
-							break;
-						}
-					}
-				}
-				else {
-					cout << "Syntax ERROR\n";
-					exit(0);
-				}
-			}
-			else {
-				cout << "Syntax ERROR\n";
-				exit(0);
-			}
-			break;
-		case 't':
-			if (func[i + 1] == 'a' && func[i + 2] == 'n') {
-				if (func[i + 3] == '(') {
-					for (size_t j = i + 3; j < func.length(); j++) {
-						if (func[j] == ')') {
-							func.replace(i, j - i + 1, to_string(tanf((Function(func.substr(i + 4, j - i - 4), t)))));
-							break;
-						}
-					}
-				}
-				else {
-					cout << "Syntax ERROR\n";
-					exit(0);
-				}
-			}
-			else {
-				cout << "Syntax ERROR\n";
-				exit(0);
-			}
-			break;
-		case 'l' :
-			if (func[i + 1] = 'n') {
-				if (func[i + 2] == '(') {
-					for (size_t j = i + 2; j < func.length(); j++) {
-						if (func[j] == ')') {
-							func.replace(i, j - i + 1, to_string(tanf((Function(func.substr(i + 3, j - i - 3), t)))));
-							break;
-						}
-					}
-				}
-				else {
-					cout << "Syntax ERROR\n";
-					exit(0);
-				}
-			}
-			else {
-				cout << "Syntax ERROR\n";
-				exit(0);
-			}
-			break;
-		default: 
-			break;
-		}
-	}
 	//Parentheses
-	for (size_t i = 0; i < func.length(); i++) 
+	for (size_t i = 0; i < func.length(); i++)
 	{
 		if (func[i] == ')') {
 			for (size_t j = i; j >= 0; j--) {
@@ -166,11 +78,87 @@ float VectorFunction::Function(string func, float t)
 					break;
 				}
 				else if (j == 0) {
-					cout << "Syntax ERROR\n";
+					cout << func << "\nSyntax Error\n";
 					exit(0);
 				}
 			}
 
+		}
+	}
+	//Trig and ln Functions 
+	for (size_t i = 0; i < func.length(); i++) {
+		switch (func[i]) {
+		case 'c':
+			if (func[i + 1] == 'o' && func[i + 2] == 's' && (isdigit(func[i + 3]) || func[i + 3] == '-' || func[i + 3] == '.')) {
+				for (size_t j = i + 3; j < func.length(); j++) {
+					if (func[j] == '-' && j == i + 3) {
+						continue;
+					}
+					if (!isdigit(func[j]) && func[j] !='.') {
+						func.replace(i, j - i, to_string(cosf(Function(func.substr(i + 3, j - i - 3), t))));
+						i--;
+						break;
+					}
+					else if (j == func.length() - 1) {
+						func.replace(i, j - i + 1, to_string(cosf(Function(func.substr(i + 3, j - i - 2), t))));
+						i--;
+						break;
+					}
+				}
+			}
+			else {
+				cout << func << "\nSyntax Error\n";
+				exit(0);
+			}
+			break;
+		case 's':
+			if (func[i + 1] == 'i' && func[i + 2] == 'n' && (isdigit(func[i + 3]) || func[i + 3] == '-' || func[i + 3] == '.')) {
+				for (size_t j = i + 3; j < func.length(); j++) {
+					if (func[j] == '-' && j == i + 3) {		
+						continue;
+					}
+					if (!isdigit(func[j]) && func[j] != '.') {
+						func.replace(i, j - i, to_string(sinf(Function(func.substr(i + 3, j - i - 3), t))));
+						i--;
+						break;
+					}
+					else if (j == func.length() - 1) {
+						func.replace(i, j - i + 1, to_string(sinf(Function(func.substr(i + 3, j - i - 2), t))));
+						i--;
+						break;
+					}
+				}
+			}
+			else {
+				cout << func << "\nSyntax Error\n";
+				exit(0);
+			}
+			break;
+		case 't':
+			if (func[i + 1] == 'a' && func[i + 2] == 'n' && (isdigit(func[i + 3]) || func[i + 3] == '-' || func[i + 3] == '.')) {
+				for (size_t j = i + 3; j < func.length(); j++) {
+					if (func[j] == '-' && j == i + 3) {
+						continue;
+					}
+					if (!isdigit(func[j]) && func[j] != '.') {
+						func.replace(i, j - i, to_string(tanf(Function(func.substr(i + 3, j - i - 3), t))));
+						i--;
+						break;
+					}
+					else if (j == func.length() - 1) {
+						func.replace(i, j - i + 1, to_string(tanf(Function(func.substr(i + 3, j - i - 2), t))));
+						i--;
+						break;
+					}
+				}
+			}
+			else {
+				cout << func << "\nSyntax Error\n";
+				exit(0);
+			}
+			break;
+		default: 
+			break;
 		}
 	}
 	//Exponents
@@ -178,7 +166,7 @@ float VectorFunction::Function(string func, float t)
 	{
 		if (func[i] == '^') {
 			if (!(isdigit(func[i - 1]) || func[i - 1] == '.') || !(isdigit(func[i + 1]) || func[i + 1] == '.' || func[i + 1] == '-')) {
-				cout << "Syntax ERROR\n";
+				cout << func << "\nSyntax Error\n";
 				exit(0);
 			}
 			for (size_t j = i - 1; j >= 0; j--) {
@@ -221,7 +209,7 @@ float VectorFunction::Function(string func, float t)
 	{
 		if (func[i] == '*') {
 			if (!(isdigit(func[i - 1]) || func[i - 1] == '.') || !(isdigit(func[i + 1]) || func[i + 1] == '-' || func[i + 1] == '.')) {
-				cout << "Syntax ERROR\n";
+				cout << func << "\nSyntax Error\n";
 				exit(0);
 			}
 			for (size_t j = i - 1; j >= 0; j--) {
