@@ -18,16 +18,16 @@
 using namespace std;
 using namespace glm;
 
-GLuint VBO[2];
-GLuint IBO[2];
-GLuint VAO[2];
+GLuint VBO[3];
+GLuint IBO[3];
+GLuint VAO[3];
 GLuint gWVPLocation;
 GLuint gXAxisRot;
 GLuint gYAxisRot;
 GLuint gZAxisRot;
 Camera* pCamera = NULL;
 PersProjInfo persProj;
-Curve* curve1 = NULL;
+Curve* curve[1];
 
 const char* pVSFileName = "shader.vs";
 const char* pFSFileName = "shader.fs";
@@ -57,8 +57,10 @@ static void RenderSceneCB()
 	glBindVertexArray(VAO[0]);
 	glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_INT, 0);
 
-	glBindVertexArray(VAO[1]);
-	glDrawElements(GL_TRIANGLES, curve1->IBOsize(), GL_UNSIGNED_INT, 0);
+	for (int i = 0; i < size(curve); i++) {
+		glBindVertexArray(VAO[i + 1]);
+		glDrawElements(GL_TRIANGLES, curve[i]->IBOsize(), GL_UNSIGNED_INT, 0);
+	}
 
 	glutSwapBuffers();
 }
@@ -109,9 +111,11 @@ static void CreateVertexBuffers()
 	glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(axisVert), axisVert, GL_STATIC_DRAW);
 
-	glGenBuffers(1, &VBO[1]);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * curve1->VBOsize(), curve1->curveVert(), GL_STATIC_DRAW);
+	for (int i = 0; i < size(curve); i++) {
+		glGenBuffers(1, &VBO[i + 1]);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO[i + 1]);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * curve[i]->VBOsize(), curve[i]->curveVert(), GL_STATIC_DRAW);
+	}
 
 }
 
@@ -130,9 +134,11 @@ static void CreateIndexBuffers()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO[0]);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(axisIndex), axisIndex, GL_STATIC_DRAW);
 
-	glGenBuffers(1, &IBO[1]);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO[1]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * curve1->IBOsize(), curve1->curveIndex(), GL_STATIC_DRAW);
+	for (int i = 0; i < size(curve); i++) {
+		glGenBuffers(1, &IBO[i + 1]);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO[i + 1]);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * curve[i]->IBOsize(), curve[i]->curveIndex(), GL_STATIC_DRAW);
+	}
 
 }
 
@@ -255,8 +261,8 @@ int main(int argc, char** argv)
 
 	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
 
-	VectorFunction* test = new VectorFunction("t^2", "t^3", "t^4");
-	curve1 = new Curve(test, 0.0f, 2.0f, 16);
+	VectorFunction* test1 = new VectorFunction("cos(t)", "sin(t)", "0");
+	curve[0] = new Curve(test1, 0, 2*pi<float>(), 512 );
 
 	CreateVertexBuffers();
 	CreateIndexBuffers();

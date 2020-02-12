@@ -1,3 +1,2 @@
-﻿  3D Grapher.cpp
-C:\Users\peyto\source\repos\3D Grapher\3D Grapher\3D Grapher.cpp(170,34): warning C4267: '=': conversion from 'size_t' to 'GLint', possible loss of data
+﻿  VectorFunction.cpp
   3D Grapher.vcxproj -> C:\Users\peyto\source\repos\3D Grapher\x64\Debug\3D Grapher.exe
