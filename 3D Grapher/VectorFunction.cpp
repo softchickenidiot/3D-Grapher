@@ -247,6 +247,113 @@ float VectorFunction::Function(string func, float t)
 			}
 		}
 	}
+	//Division
+	for (size_t i = 0; i < func.length(); i++)
+	{
+		if (func[i] == '/') {
+			if (!(isdigit(func[i - 1]) || func[i - 1] == '.') || !(isdigit(func[i + 1]) || func[i + 1] == '-' || func[i + 1] == '.')) {
+				cout << func << "\nSyntax Error\n";
+				exit(0);
+			}
+			for (size_t j = i - 1; j >= 0; j--) {
+				if (func[j] == '-') {
+					m_c = stof(func.substr(j, i - j));
+					func.erase(j, i - j);
+					i -= i - j;
+					break;
+				}
+				else if (!isdigit(func[j]) && func[j] != '.') {
+					m_c = stof(func.substr(j + 1, i - j - 1));
+					func.erase(j + 1, i - j - 1);
+					i -= i - j - 1;
+					break;
+				}
+				else if (j == 0) {
+					m_c = stof(func.substr(j, i - j));
+					func.erase(j, i - j);
+					i -= i - j;
+					break;
+				}
+			}
+			for (size_t j = i + 1; j < func.length(); j++) {
+				if (func[j] == '-' && j == i + 1) {
+					continue;
+				}
+				if (!isdigit(func[j]) && func[j] != '.') {
+					func.replace(i, j - i, to_string(m_c / stof(func.substr(i + 1, j - i - 1))));
+					break;
+				}
+				else if (j == func.length() - 1) {
+					func.replace(i, j - i + 1, to_string(m_c / stof(func.substr(i + 1, j - i))));
+					break;
+				}
+			}
+		}
+	}
+	//Addition Format
+	for (size_t i = 0; i < func.length(); i++)
+	{
+		if (func[i] == '+') {
+			if (func[i - 1] == '-' || func[i + 1] == '+') {
+				func.erase(i, 1);
+				i = -1;
+				continue;
+			}
+		}
+		if (func[i] == '-') {
+			if (func[i + 1] == '-') {
+				func.replace(i, 2, "+");
+				i = -1;
+				continue;
+			}
+			if (func[i - 1] != '+') {
+				func.insert(i, "-");
+			}
+		}
+	}
+	//Addition Operation 
+	for (size_t i = 0; i < func.length(); i++)
+	{
+		if (func[i] == '+') {
+			if (!(isdigit(func[i - 1]) || func[i - 1] == '.') || !(isdigit(func[i + 1]) || func[i + 1] == '-' || func[i + 1] == '.')) {
+				cout << func << "\nSyntax Error\n";
+				exit(0);
+			}
+			for (size_t j = i - 1; j >= 0; j--) {
+				if (func[j] == '-') {
+					m_c = stof(func.substr(j, i - j));
+					func.erase(j, i - j);
+					i -= i - j;
+					break;
+				}
+				else if (!isdigit(func[j]) && func[j] != '.') {
+					m_c = stof(func.substr(j + 1, i - j - 1));
+					func.erase(j + 1, i - j - 1);
+					i -= i - j - 1;
+					break;
+				}
+				else if (j == 0) {
+					m_c = stof(func.substr(j, i - j));
+					func.erase(j, i - j);
+					i -= i - j;
+					break;
+				}
+			}
+			for (size_t j = i + 1; j < func.length(); j++) {
+				if (func[j] == '-' && j == i + 1) {
+					continue;
+				}
+				if (!isdigit(func[j]) && func[j] != '.') {
+					func.replace(i, j - i, to_string(m_c + stof(func.substr(i + 1, j - i - 1))));
+					break;
+				}
+				else if (j == func.length() - 1) {
+					func.replace(i, j - i + 1, to_string(m_c + stof(func.substr(i + 1, j - i))));
+					break;
+				}
+			}
+		}
+	}
 	
 	return stof(func);
 }

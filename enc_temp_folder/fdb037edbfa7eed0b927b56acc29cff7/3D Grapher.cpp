@@ -261,8 +261,8 @@ int main(int argc, char** argv)
 
 	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
 
-	VectorFunction* test1 = new VectorFunction("t", "t", "t");
-	curve[0] = new Curve(test1, 0.0f, 10.0f, pow(2, 4), .01 );
+	VectorFunction* test1 = new VectorFunction("cos(t*)", "cos(t*0.01)*(sin(t)^1.5)^2", "sin(t*0.01)");
+	curve[0] = new Curve(test1, 0.0f, 200*pi<float>(), pow(2, 12), .01 );
 
 	CreateVertexBuffers();
 	CreateIndexBuffers();
