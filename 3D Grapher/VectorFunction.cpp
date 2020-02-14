@@ -290,8 +290,8 @@ float VectorFunction::Function(string func, float t)
 			}
 		}
 	}
-	//Addition Format
-	for (size_t i = 0; i < func.length(); i++)
+	//Addition and Subtraction Format
+	for (size_t i = 1; i < func.length(); i++)
 	{
 		if (func[i] == '+') {
 			if (func[i - 1] == '-' || func[i + 1] == '+') {
@@ -306,8 +306,8 @@ float VectorFunction::Function(string func, float t)
 				i = -1;
 				continue;
 			}
-			if (func[i - 1] != '+') {
-				func.insert(i, "-");
+			if (func[i - 1] != '+' && (isdigit(func[i - 1]) || func[i - 1] != '.')) {
+				func.insert(i, "+");
 			}
 		}
 	}
