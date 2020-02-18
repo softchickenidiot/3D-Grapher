@@ -1,5 +1,28 @@
 #include "VectorFunction.h"
 
+
+
+void VectorFunction::inputParameter(float t)
+{
+	NormalFunc(t);
+	PositionFunc(t);
+}
+
+vec3 VectorFunction::getPosFunc()
+{
+	return m_r;
+}
+
+vec3 VectorFunction::getTanFunc()
+{
+	return m_T;
+}
+
+vec3 VectorFunction::getNorFunc()
+{
+	return m_N;
+}
+
 vec3 VectorFunction::PositionFunc(float t)
 {
 	m_r = {Function(m_xFunc, t), Function(m_yFunc, t), Function(m_zFunc, t) };
@@ -208,18 +231,12 @@ float VectorFunction::Function(string func, float t)
 	for (size_t i = 0; i < func.length(); i++)
 	{
 		if (func[i] == '*') {
-			if (!(isdigit(func[i - 1]) || func[i - 1] == '.') || !(isdigit(func[i + 1]) || func[i + 1] == '-' || func[i + 1] == '.')) {
+			if (!(isdigit(func[i - 1]) || func[i - 1] == '.') || !(isdigit(func[i + 1]) || func[i + 1] == '-' ||func[i + 1] == '.')) {
 				cout << func << "\nSyntax Error\n";
 				exit(0);
 			}
 			for (size_t j = i - 1; j >= 0; j--) {
-				if (func[j] == '-') {
-					m_c = stof(func.substr(j, i - j));
-					func.erase(j, i - j);
-					i -= i - j;
-					break;
-				}
-				else if (!isdigit(func[j]) && func[j] != '.') {
+				if (!isdigit(func[j]) && func[j] != '.') {
 					m_c = stof(func.substr(j + 1, i - j - 1));
 					func.erase(j + 1, i - j - 1);
 					i -= i - j - 1;
@@ -293,17 +310,22 @@ float VectorFunction::Function(string func, float t)
 	//Addition and Subtraction Format
 	for (size_t i = 1; i < func.length(); i++)
 	{
+		if (func[i - 1] == '-' && func[i] =='-') {
+			func.replace(i - 1, 2, "+");
+			i = 0;
+			continue;
+		}
 		if (func[i] == '+') {
 			if (func[i - 1] == '-' || func[i + 1] == '+') {
 				func.erase(i, 1);
-				i = -1;
+				i = 0;
 				continue;
 			}
 		}
 		if (func[i] == '-') {
 			if (func[i + 1] == '-') {
 				func.replace(i, 2, "+");
-				i = -1;
+				i = 0;
 				continue;
 			}
 			if (func[i - 1] != '+' && (isdigit(func[i - 1]) || func[i - 1] != '.')) {
@@ -312,7 +334,7 @@ float VectorFunction::Function(string func, float t)
 		}
 	}
 	//Addition Operation 
-	for (size_t i = 0; i < func.length(); i++)
+	for (size_t i = 1; i < func.length(); i++)
 	{
 		if (func[i] == '+') {
 			if (!(isdigit(func[i - 1]) || func[i - 1] == '.') || !(isdigit(func[i + 1]) || func[i + 1] == '-' || func[i + 1] == '.')) {
@@ -354,6 +376,6 @@ float VectorFunction::Function(string func, float t)
 			}
 		}
 	}
-	
+	cout << func << '\n';
 	return stof(func);
 }

@@ -19,13 +19,20 @@ public:
 		m_zFunc = zFunc;
 	}
 
+	void inputParameter(float t);
+
+	vec3 getPosFunc();
+	vec3 getTanFunc();
+	vec3 getNorFunc();
+
+private:
+
 	vec3 PositionFunc(float t);
 	vec3 TangentFunc(float t);
 	vec3 NormalFunc(float t);
 
-private:
-
 	float Function(string func, float t);
+
 
 	string m_xFunc;
 	string m_yFunc;
@@ -36,5 +43,5 @@ private:
 	vec3 m_N;
 
 	float m_c = 1.0f;
-	float m_h = .01f;
+	float m_h = .001f;
 };

@@ -1,5 +1,2 @@
-﻿  3D Grapher.cpp
-C:\Users\peyto\source\repos\3D Grapher\3D Grapher\3D Grapher.cpp(176,34): warning C4267: '=': conversion from 'size_t' to 'GLint', possible loss of data
-C:\Users\peyto\source\repos\3D Grapher\3D Grapher\3D Grapher.cpp(265,67): warning C4305: 'argument': truncation from 'double' to 'float'
-C:\Users\peyto\source\repos\3D Grapher\3D Grapher\3D Grapher.cpp(265,54): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+﻿  VectorFunction.cpp
   3D Grapher.vcxproj -> C:\Users\peyto\source\repos\3D Grapher\x64\Debug\3D Grapher.exe
