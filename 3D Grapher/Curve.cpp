@@ -11,8 +11,8 @@ const Vertex* Curve::curveVert()
 	for (int i = 0; i <= m_samples; i++) {
 		t = i * m_sampleLen + m_minPara;
 		m_curveFunc->inputParameter(t);
-		curve[2 * i + 0] = { m_curveFunc->getPosFunc() - (m_width / 2) * m_curveFunc->getNorFunc(), m_color, 1 };
-		curve[2 * i + 1] = { m_curveFunc->getPosFunc() + (m_width / 2) * m_curveFunc->getNorFunc(), m_color, 1 };
+		curve[2 * i + 0] = { m_curveFunc->getPosFunc() - (m_width / 2) * cross(m_curveFunc->getTanFunc(),m_curveFunc->getNorFunc()), m_color, 1 };
+		curve[2 * i + 1] = { m_curveFunc->getPosFunc() + (m_width / 2) * cross(m_curveFunc->getTanFunc(),m_curveFunc->getNorFunc()), m_color, 1 };
 		
 		if (((100 * i) / m_samples) != ((100 * (i - 1)) / m_samples)) {
 			cout << (100 * i) / m_samples << "% "<< i << " Lines" << '\n' ;

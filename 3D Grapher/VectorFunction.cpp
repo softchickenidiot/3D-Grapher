@@ -5,6 +5,7 @@
 void VectorFunction::inputParameter(float t)
 {
 	NormalFunc(t);
+	TangentFunc(t);
 	PositionFunc(t);
 }
 
@@ -376,6 +377,6 @@ float VectorFunction::Function(string func, float t)
 			}
 		}
 	}
-	cout << func << '\n';
+	
 	return stof(func);
 }
