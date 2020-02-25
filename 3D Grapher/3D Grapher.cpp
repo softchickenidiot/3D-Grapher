@@ -28,7 +28,7 @@ GLuint gZAxisRot;
 Camera* pCamera = NULL;
 PersProjInfo persProj;
 
-unsigned int samples = pow(2, 6);
+unsigned int samples = pow(2, 5);
 
 const char* pVSFileName = "shader.vs";
 const char* pFSFileName = "shader.fs";
@@ -59,7 +59,7 @@ static void RenderSceneCB()
 	glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_INT, 0);
 
 	glBindVertexArray(VAO[1]);
-	glDrawElements(GL_TRIANGLES, 24576, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, 18816, GL_UNSIGNED_INT, 0);
 
 
 	glutSwapBuffers();
@@ -111,16 +111,27 @@ static void CreateVertexBuffers()
 	glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(axisVert), axisVert, GL_STATIC_DRAW);
 
-	Vertex sphereVert[4225];
+	Vertex sphereVert[4356];
 
 	float s;
 	float t;
+	vec3 pos;
+	vec3 partialS;
+	vec3 partialT;
+	vec4 color;
 
 	for (int i = 0; i < samples + 1; i++) {
 		for (int j = 0; j < samples + 1; j++) {
-			s = 2.0f * float(i) / float(samples) - 1.0f;
-			t = 2.0f * float(j) / float(samples) - 1.0f;
-			sphereVert[(samples + 1) * i + j] = { vec3(s,t,t*t + s*s), vec4(0.0f, float(i) / float(samples), float(j) / float(samples), 1.0f), 1 };
+			s = 2.0f * pi<float>() * float(i) / float(samples);
+			t = 2.0f * pi<float>() * float(j) / float(samples) - pi<float>();
+			pos = vec3(cosf(t)*cosf(s), cosf(t)*sinf(s), sinf(t));
+			partialS = vec3(-1.0f*cosf(t)*sin(s), cos(t)*cos(s), 0);
+			partialT = vec3(-1.0f*sinf(t)*cosf(s), -1.0f*sinf(t)*sinf(s), cosf(t));
+			color = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+			sphereVert[4 * ((samples + 1) * i + j) + 0] = { pos - 0.005f * normalize(partialS), color, 1 };
+			sphereVert[4 * ((samples + 1) * i + j) + 1] = { pos + 0.005f * normalize(partialS), color, 1 };
+			sphereVert[4 * ((samples + 1) * i + j) + 2] = { pos - 0.005f * normalize(partialT), color, 1 };
+			sphereVert[4 * ((samples + 1) * i + j) + 3] = { pos + 0.005f * normalize(partialT), color, 1 };
 		}
 	}
 
@@ -144,15 +155,23 @@ static void CreateIndexBuffers()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO[0]);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(axisIndex), axisIndex, GL_STATIC_DRAW);
 
-	unsigned int sphereIndex[24576];
+	unsigned int sphereIndex[18816];
+
+	for (int i = 0; i < samples + 1; i++) {
+		for (int j = 0; j < samples; j++) { 
+			sphereIndex[12 * (samples * i + j) + 0] = 4 * ((samples + 1) * i + j + 0) + 0;		sphereIndex[12 * (samples * i + j) + 1] = 4 * ((samples + 1) * i + j + 0) + 1;		sphereIndex[12 * (samples * i + j) + 2] = 4 * ((samples + 1) * i + j + 1) + 1;
+			sphereIndex[12 * (samples * i + j) + 3] = 4 * ((samples + 1) * i + j + 1) + 1;		sphereIndex[12 * (samples * i + j) + 4] = 4 * ((samples + 1) * i + j + 1) + 0;		sphereIndex[12 * (samples * i + j) + 5] = 4 * ((samples + 1) * i + j + 0) + 0;
+			sphereIndex[12 * (samples * i + j) + 6] = 4 * ((samples + 1) * (j + 0) + i) + 2;	sphereIndex[12 * (samples * i + j) + 7] = 4 * ((samples + 1) * (j + 0) + i) + 3;	sphereIndex[12 * (samples * i + j) + 8] = 4 * ((samples + 1) * (j + 1) + i) + 3;
+			sphereIndex[12 * (samples * i + j) + 9] = 4 * ((samples + 1) * (j + 1) + i) + 3;	sphereIndex[12 * (samples * i + j) + 10] = 4 * ((samples + 1) * (j + 1) + i) + 2;	sphereIndex[12 * (samples * i + j) + 11] = 4 * ((samples + 1) * (j + 0) + i + 0) + 2;
+		}
+	}	
 
 	for (int i = 0; i < samples; i++) {
 		for (int j = 0; j < samples; j++) {
-			sphereIndex[6 * (samples * i + j) + 0] = (samples + 1) * (i + 0) + j + 0;	sphereIndex[6 * (samples * i + j) + 1] = (samples + 1) * (i + 0) + j + 1;	sphereIndex[6 * (samples * i + j) + 2] = (samples + 1) * (i + 1) + j + 1;
-			sphereIndex[6 * (samples * i + j) + 3] = (samples + 1) * (i + 1) + j + 1;	sphereIndex[6 * (samples * i + j) + 4] = (samples + 1) * (i + 1) + j + 0;	sphereIndex[6 * (samples * i + j) + 5] = (samples + 1) * (i + 0) + j + 0;
+			sphereIndex[12 * samples * (samples + 1) + 6 * (samples * i + j) + 0] = 4 * ((samples + 1) * (i + 0) + j + 0) + 0;	sphereIndex[12 * samples * (samples + 1) + 6 * (samples * i + j) + 1] = 4 * ((samples + 1) * (i + 1) + j + 1) + 3; sphereIndex[12 * samples * (samples + 1) + 6 * (samples * i + j) + 2] = 4 * ((samples + 1) * (i + 1) + j + 1) + 1;
+			sphereIndex[12 * samples * (samples + 1) + 6 * (samples * i + j) + 3] = 4 * ((samples + 1) * (i + 1) + j + 1) + 1;	sphereIndex[12 * samples * (samples + 1) + 6 * (samples * i + j) + 4] = 4 * ((samples + 1) * (i + 0) + j + 0) + 2; sphereIndex[12 * samples * (samples + 1) + 6 * (samples * i + j) + 5] = 4 * ((samples + 1) * (i + 0) + j + 0) + 0;
 		}
 	}
-
 	glGenBuffers(1, &IBO[1]);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO[1]);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(sphereIndex), sphereIndex, GL_STATIC_DRAW);

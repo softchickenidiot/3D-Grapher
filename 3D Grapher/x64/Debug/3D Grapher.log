@@ -1,8 +1,10 @@
 ﻿  3D Grapher.cpp
 C:\Users\peyto\source\repos\3D Grapher\3D Grapher\3D Grapher.cpp(31,22): warning C4244: 'initializing': conversion from 'double' to 'unsigned int', possible loss of data
-C:\Users\peyto\source\repos\3D Grapher\3D Grapher\3D Grapher.cpp(119,20): warning C4018: '<': signed/unsigned mismatch
-C:\Users\peyto\source\repos\3D Grapher\3D Grapher\3D Grapher.cpp(120,21): warning C4018: '<': signed/unsigned mismatch
-C:\Users\peyto\source\repos\3D Grapher\3D Grapher\3D Grapher.cpp(149,20): warning C4018: '<': signed/unsigned mismatch
-C:\Users\peyto\source\repos\3D Grapher\3D Grapher\3D Grapher.cpp(150,21): warning C4018: '<': signed/unsigned mismatch
-C:\Users\peyto\source\repos\3D Grapher\3D Grapher\3D Grapher.cpp(192,34): warning C4267: '=': conversion from 'size_t' to 'GLint', possible loss of data
+C:\Users\peyto\source\repos\3D Grapher\3D Grapher\3D Grapher.cpp(123,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\peyto\source\repos\3D Grapher\3D Grapher\3D Grapher.cpp(124,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\peyto\source\repos\3D Grapher\3D Grapher\3D Grapher.cpp(160,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\peyto\source\repos\3D Grapher\3D Grapher\3D Grapher.cpp(161,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\peyto\source\repos\3D Grapher\3D Grapher\3D Grapher.cpp(169,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\peyto\source\repos\3D Grapher\3D Grapher\3D Grapher.cpp(170,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\peyto\source\repos\3D Grapher\3D Grapher\3D Grapher.cpp(211,34): warning C4267: '=': conversion from 'size_t' to 'GLint', possible loss of data
   3D Grapher.vcxproj -> C:\Users\peyto\source\repos\3D Grapher\x64\Debug\3D Grapher.exe
