@@ -157,6 +157,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Curve.cpp" />
     <ClCompile Include="Pipeline.cpp" />
+    <ClCompile Include="Surface.cpp" />
     <ClCompile Include="Transformations.cpp" />
     <ClCompile Include="VectorFunction.cpp" />
   </ItemGroup>
@@ -170,6 +171,7 @@
     <ClInclude Include="PersProjInfo.h" />
     <ClInclude Include="Pipeline.h" />
     <ClInclude Include="ReadFile.h" />
+    <ClInclude Include="Surface.h" />
     <ClInclude Include="Transformations.h" />
     <ClInclude Include="VectorFunction.h" />
     <ClInclude Include="Vertex.h" />

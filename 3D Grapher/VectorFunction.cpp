@@ -9,6 +9,11 @@ void VectorFunction::inputParameter(float t)
 	PositionFunc(t);
 }
 
+void VectorFunction::inputParameter(float s, float t)
+{
+	PositionFunc(t, s);
+}
+
 vec3 VectorFunction::getPosFunc()
 {
 	return m_r;
@@ -24,9 +29,9 @@ vec3 VectorFunction::getNorFunc()
 	return m_N;
 }
 
-vec3 VectorFunction::PositionFunc(float t)
+vec3 VectorFunction::PositionFunc(float t, float s)
 {
-	m_r = {Function(m_xFunc, t), Function(m_yFunc, t), Function(m_zFunc, t) };
+	m_r = {Function(m_xFunc, t, s), Function(m_yFunc, t, s), Function(m_zFunc, t, s) };
 
 	return m_r;
 }
@@ -51,15 +56,21 @@ vec3 VectorFunction::NormalFunc(float t)
 	return m_N;
 }
 
-float VectorFunction::Function(string func, float t)
+float VectorFunction::Function(string func, float t, float s)
 {
-	//Format and Input t and constants
+	//Format and Input Parameters and constants
 	for (size_t i = 0; i < func.length(); i++) 
 	{
 		switch (func[i]) {
 		case ' ': 
 			func.erase(func.begin() + i);
 			i--;
+			break;
+		case 's':
+			if (func[i + 1] != 'i' && func[i - 1] != 'o') {
+				func.replace(i, 1, to_string(s));
+				i--;
+			}
 			break;
 		case 't':
 			if (func[i + 1] != 'a') {
