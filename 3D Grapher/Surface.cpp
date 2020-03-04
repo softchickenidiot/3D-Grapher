@@ -10,7 +10,9 @@ const Vertex* Surface::surfaceVert()
 	cout << 0 << "% " << 0 << " Vertices" << '\n';
 
 	for (int i = 0; i <= m_samples; i++) {
+		t = m_minT;
 		for (int j = 0; j <= m_samples; j++) {
+
 			m_surfaceFunc->inputParameter(s, t);
 
 			surface[(m_samples + 1) * i + j] = { m_surfaceFunc->getPosFunc(), vec4(float(j)/m_samples, float(i)/m_samples, 0.0f, 1.0f), 1};
@@ -20,14 +22,13 @@ const Vertex* Surface::surfaceVert()
 			surface[5 * ((m_samples + 1) * i + j) + 3] = { m_surfaceFunc->getPosFunc() - .005 * m_surfaceFunc->getPartialT, vec4(0.0f, 0.0f, 0.0f, 1.0f), 1 };
 			surface[5 * ((m_samples + 1) * i + j) + 4] = { m_surfaceFunc->getPosFunc() + .005 * m_surfaceFunc->getPartialT, vec4(0.0f, 0.0f, 0.0f, 1.0f), 1 };
 			*/
-
+			cout << '<' << surface[(m_samples + 1) * i + j].m_pos.x << ',' << surface[(m_samples + 1) * i + j].m_pos.y << ',' << surface[(m_samples + 1) * i + j].m_pos.z << ">\n";
 			t += m_tLen;
 		}
 
 		if (((100 * (m_samples + 1) * i) / m_samples) != ((100 * ((m_samples + 1) * i - 1)) / m_samples)) {
 			cout << (100 * (m_samples + 1) * i) / m_samples << "% " << (m_samples + 1) * i << " Vertices" << '\n';
 		}
-
 		s += m_sLen;
 	}
 

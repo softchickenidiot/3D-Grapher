@@ -9,6 +9,7 @@
 #include "Camera.h"
 #include "Vertex.h"
 #include "Curve.h"
+#include "Surface.h"
 #include "VectorFunction.h"
 
 
@@ -18,9 +19,6 @@
 using namespace std;
 using namespace glm;
 
-GLuint VBO[4];
-GLuint IBO[4];
-GLuint VAO[4];
 GLuint gWVPLocation;
 GLuint gXAxisRot;
 GLuint gYAxisRot;
@@ -28,8 +26,12 @@ GLuint gZAxisRot;
 Camera* pCamera = NULL;
 PersProjInfo persProj;
 
-Curve* curve1;
-Curve* curve2;
+GLuint* VBO;
+GLuint* IBO;
+GLuint* VAO;
+
+Curve* curve[1];
+Surface* surface[1];
 
 unsigned int samples = pow(2, 6);
 
@@ -41,7 +43,7 @@ static void RenderSceneCB()
 {
 	pCamera->OnRender();
 
-	glClear(GL_COLOR_BUFFER_BIT); 
+	glClear(GL_COLOR_BUFFER_BIT);
 
 	static float Scale = 0.0;
 	Scale += 0.001f;
@@ -61,15 +63,15 @@ static void RenderSceneCB()
 	glBindVertexArray(VAO[0]);
 	glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_INT, 0);
 
-	glBindVertexArray(VAO[1]);
-	glDrawElements(GL_TRIANGLES, 99462, GL_UNSIGNED_INT, 0);
+	for (int i = 0; i < size(curve); i++) {
+		glBindVertexArray(VAO[i + 1]);
+		glDrawElements(GL_TRIANGLES, curve[i]->IBOsize(), GL_UNSIGNED_INT, 0);
+	}
 
-
-	glBindVertexArray(VAO[2]);
-	glDrawElements(GL_TRIANGLES, curve1->IBOsize(), GL_UNSIGNED_INT, 0);
-
-	glBindVertexArray(VAO[3]);
-	glDrawElements(GL_TRIANGLES, curve2->IBOsize(), GL_UNSIGNED_INT, 0);
+	for (int i = 0; i < size(surface); i++) {
+		glBindVertexArray(VAO[i + size(curve) + 1]);
+		glDrawElements(GL_TRIANGLES, surface[i]->IBOsize(), GL_UNSIGNED_INT, 0);
+	}
 
 	glutSwapBuffers();
 }
@@ -120,43 +122,17 @@ static void CreateVertexBuffers()
 	glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(axisVert), axisVert, GL_STATIC_DRAW);
 
-	Vertex surface[5*65*65];
-
-	float s;
-	float t;
-	vec3 pos;
-	vec3 partialS;
-	vec3 partialT;
-	vec4 color;
-
-	for (int i = 0; i < samples + 1; i++) {
-		for (int j = 0; j < samples + 1; j++) {
-			s = 4.0f * pi<float>() * float(i) / float(samples) - 2*pi<float>();
-			t = 4.0f * pi<float>() * float(j) / float(samples) - 2*pi<float>();
-			pos = vec3(s, sinf(t)*sinf(s), t);
-			partialS = vec3(1, sin(t)*cos(s), 0);
-			partialT = vec3(0, cos(t)*sin(s), cosf(t));
-			color = vec4(float(j) / samples, float(i) / samples, 0.0f, 1.0f);
-			surface[5 * ((samples + 1) * i + j) + 0] = { pos, color, 1 };
-			surface[5 * ((samples + 1) * i + j) + 1] = { pos - .005f * partialS, vec4(0.0f, 0.0f, 0.0f, 1.0f), 1 };
-			surface[5 * ((samples + 1) * i + j) + 2] = { pos + .005f * partialS, vec4(0.0f, 0.0f, 0.0f, 1.0f), 1 };
-			surface[5 * ((samples + 1) * i + j) + 3] = { pos - .005f * partialT, vec4(0.0f, 0.0f, 0.0f, 1.0f), 1 };
-			surface[5 * ((samples + 1) * i + j) + 4] = { pos + .005f * partialT, vec4(0.0f, 0.0f, 0.0f, 1.0f), 1 };
-
-		}
+	for (int i = 0; i < size(curve); i++) {
+		glGenBuffers(1, &VBO[i + 1]);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO[i + 1]);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * curve[i]->VBOsize(), curve[i]->curveVert(), GL_STATIC_DRAW);
 	}
 
-	glGenBuffers(1, &VBO[1]);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO[1]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(surface), surface, GL_STATIC_DRAW);
-
-	glGenBuffers(1, &VBO[2]);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO[2]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex)*curve1->VBOsize(), curve1->curveVert(), GL_STATIC_DRAW);
-
-	glGenBuffers(1, &VBO[3]);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO[3]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * curve2->VBOsize(), curve2->curveVert(), GL_STATIC_DRAW);
+	for (int i = 0; i < size(surface); i++) {
+		glGenBuffers(1, &VBO[i + size(curve) + 1]);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO[i + size(curve) + 1]);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * surface[i]->VBOsize(), surface[i]->surfaceVert(), GL_STATIC_DRAW);
+	}
 }
 
 static void CreateIndexBuffers()
@@ -173,49 +149,23 @@ static void CreateIndexBuffers()
 	glGenBuffers(1, &IBO[0]);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO[0]);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(axisIndex), axisIndex, GL_STATIC_DRAW);
-
-	unsigned int surface[99462];
-
-	for (int i = 0; i < samples; i++) {
-		for (int j = 0; j < samples; j++) {
-			surface[6 * (samples * i + j) + 0] = 5 * ((samples + 1) * (i + 0) + j + 0);	surface[6 * (samples * i + j) + 1] = 5 * ((samples + 1) * (i + 0) + j + 1);	surface[6 * (samples * i + j) + 2] = 5 * ((samples + 1) * (i + 1) + j + 1);
-			surface[6 * (samples * i + j) + 3] = 5 * ((samples + 1) * (i + 1) + j + 1);	surface[6 * (samples * i + j) + 4] = 5 * ((samples + 1) * (i + 1) + j + 0);	surface[6 * (samples * i + j) + 5] = 5 * ((samples + 1) * (i + 0) + j + 0);
-
-		}
-	}
-
-	for (int i = 0; i < samples + 1; i++) {
-		for (int j = 0; j < samples; j++) {
-			surface[6 * samples * samples + 12 * (samples * i + j) + 0] = 5 * ((samples + 1) * i + j + 0) + 1;		surface[6 * samples * samples + 12 * (samples * i + j) + 1] = 5 * ((samples + 1) * i + j + 0) + 2;		surface[6 * samples * samples + 12 * (samples * i + j) + 2] = 5 * ((samples + 1) * i + j + 1) + 2;
-			surface[6 * samples * samples + 12 * (samples * i + j) + 3] = 5 * ((samples + 1) * i + j + 1) + 2;		surface[6 * samples * samples + 12 * (samples * i + j) + 4] = 5 * ((samples + 1) * i + j + 1) + 1;		surface[6 * samples * samples + 12 * (samples * i + j) + 5] = 5 * ((samples + 1) * i + j + 0) + 1;
-			surface[6 * samples * samples + 12 * (samples * i + j) + 6] = 5 * ((samples + 1) * (j + 0) + i) + 3;	surface[6 * samples * samples + 12 * (samples * i + j) + 7] = 5 * ((samples + 1) * (j + 0) + i) + 4;	surface[6 * samples * samples + 12 * (samples * i + j) + 8] = 5 * ((samples + 1) * (j + 1) + i) + 4;
-			surface[6 * samples * samples + 12 * (samples * i + j) + 9] = 5 * ((samples + 1) * (j + 1) + i) + 4;	surface[6 * samples * samples + 12 * (samples * i + j) + 10] = 5 * ((samples + 1) * (j + 1) + i) + 3;	surface[6 * samples * samples + 12 * (samples * i + j) + 11] = 5 * ((samples + 1) * (j + 0) + i + 0) + 3;
-		}
-	}
-
-	for (int i = 0; i < samples; i++) {
-		for (int j = 0; j < samples; j++) {
-			surface[6 * samples * (3 * samples + 2) + 6 * (samples * i + j) + 0] = 5 * ((samples + 1) * (i + 0) + j + 0) + 1;	surface[6 * samples * (3 * samples + 2) + 6 * (samples * i + j) + 1] = 5 * ((samples + 1) * (i + 1) + j + 1) + 4;	surface[6 * samples * (3 * samples + 2) + 6 * (samples * i + j) + 2] = 5 * ((samples + 1) * (i + 1) + j + 1) + 2;
-			surface[6 * samples * (3 * samples + 2) + 6 * (samples * i + j) + 3] = 5 * ((samples + 1) * (i + 1) + j + 1) + 2;	surface[6 * samples * (3 * samples + 2) + 6 * (samples * i + j) + 4] = 5 * ((samples + 1) * (i + 0) + j + 0) + 3;	surface[6 * samples * (3 * samples + 2) + 6 * (samples * i + j) + 5] = 5 * ((samples + 1) * (i + 0) + j + 0) + 1;
-		}
-	}
 	
-	glGenBuffers(1, &IBO[1]);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO[1]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(surface), surface, GL_STATIC_DRAW);
+	for (int i = 0; i < size(curve); i++) {
+		glGenBuffers(1, &IBO[i + 1]);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO[i + 1]);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * curve[i]->IBOsize(), curve[i]->curveIndex(), GL_STATIC_DRAW);
+	}
 
-	glGenBuffers(1, &IBO[2]);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO[2]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*curve1->IBOsize(), curve1->curveIndex(), GL_STATIC_DRAW);
-	
-	glGenBuffers(1, &IBO[3]);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO[3]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * curve2->IBOsize(), curve2->curveIndex(), GL_STATIC_DRAW);
+	for (int i = 0; i < size(surface); i++) {
+		glGenBuffers(1, &IBO[i + size(curve) + 1]);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO[i + size(curve) + 1]);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * surface[i]->IBOsize(), surface[i]->surfaceIndex(), GL_STATIC_DRAW);
+	}
 }
 
 static void CreateVertexArrays()
 {	
-	for (int i = 0; i < size(VAO); i++) {
+	for (int i = 0; i < 1 + size(curve) + size(surface); i++) {
 		glGenVertexArrays(1, &VAO[i]);
 		glBindVertexArray(VAO[i]);
 
@@ -332,10 +282,15 @@ int main(int argc, char** argv)
 
 	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
 
-	VectorFunction trefoil("(2+cos(3*t))*cos(2*t)", "sin(3*t)+3", "(2+cos(3*t))*sin(2*t)");
+	VBO = new GLuint[1 + size(curve) + size(surface)];
+	IBO = new GLuint[1 + size(curve) + size(surface)];
+	VAO = new GLuint[1 + size(curve) + size(surface)];
 
-	curve1 = new Curve(&trefoil, 0, 1*pi<float>(), 64);
-	curve2 = new Curve(&trefoil, 1 * pi<float>(), 2 * pi<float>(), 64, 0.1, vec4(0.0f, 1.0f, 0.0f, 1.0f));
+	VectorFunction line("t", "t", "t");
+	VectorFunction sine("s", "s*sin (t)", "t");
+
+	curve[0] = new Curve(&line, -1, 1);
+	surface[0] = new Surface(&sine, -2*pi<float>(), 2 * pi<float>(), -2 * pi<float>(), 2 * pi<float>(), 32);
 
 	CreateVertexBuffers();
 	CreateIndexBuffers();

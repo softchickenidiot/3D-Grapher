@@ -67,7 +67,7 @@ float VectorFunction::Function(string func, float t, float s)
 			i--;
 			break;
 		case 's':
-			if (func[i + 1] != 'i' && func[i - 1] != 'o') {
+			if (func[i + 1] != 'i' && (i == 0 || func[i - 1] != 'o')) {
 				func.replace(i, 1, to_string(s));
 				i--;
 			}
