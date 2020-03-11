@@ -30,7 +30,7 @@ GLuint* VBO;
 GLuint* IBO;
 GLuint* VAO;
 
-Curve* curve[1];
+Curve* curve[2];
 Surface* surface[1];
 
 unsigned int samples = pow(2, 6);
@@ -286,11 +286,11 @@ int main(int argc, char** argv)
 	IBO = new GLuint[1 + size(curve) + size(surface)];
 	VAO = new GLuint[1 + size(curve) + size(surface)];
 
-	VectorFunction line("t", "t", "t");
-	VectorFunction sine("s", "s*sin (t)", "t");
+	VectorFunction point("t", "t", "t");
+	VectorFunction bound("s", "3*s+2*t", "t");
 
-	curve[0] = new Curve(&line, -1, 1);
-	surface[0] = new Surface(&sine, -2*pi<float>(), 2 * pi<float>(), -2 * pi<float>(), 2 * pi<float>(), 32);
+	curve[0] = new Curve(&point, -1, 1);
+	surface[0] = new Surface(&bound, 0, 1, 0, 1, 16);
 
 	CreateVertexBuffers();
 	CreateIndexBuffers();

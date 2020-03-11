@@ -22,7 +22,6 @@ const Vertex* Surface::surfaceVert()
 			surface[5 * ((m_samples + 1) * i + j) + 3] = { m_surfaceFunc->getPosFunc() - .005 * m_surfaceFunc->getPartialT, vec4(0.0f, 0.0f, 0.0f, 1.0f), 1 };
 			surface[5 * ((m_samples + 1) * i + j) + 4] = { m_surfaceFunc->getPosFunc() + .005 * m_surfaceFunc->getPartialT, vec4(0.0f, 0.0f, 0.0f, 1.0f), 1 };
 			*/
-			cout << '<' << surface[(m_samples + 1) * i + j].m_pos.x << ',' << surface[(m_samples + 1) * i + j].m_pos.y << ',' << surface[(m_samples + 1) * i + j].m_pos.z << ">\n";
 			t += m_tLen;
 		}
 
